@@ -4,6 +4,7 @@ import requests as rq
 import os
 import pandas as pd
 from lxml import etree
+import time
 
 html_template = '''<!DOCTYPE html>
 <html lang="en">
@@ -40,6 +41,8 @@ if __name__ == '__main__':
     home_url = 'https://solgenomics.net'
     query_string_midfix = '/search/quick?term='
     ajax_url_template = 'https://solgenomics.net/jsforms/locus_ajax_form.pl?object_id=#ID#&action=view'  # Use it by replacing #ID#
+
+    time_begin = time.time()
 
     cnt = 0
     for gene_code in df_input['gene']:
@@ -88,6 +91,7 @@ if __name__ == '__main__':
                 values_dict[column_name] = ''
             df_input[column_name][df_input['gene'] == gene_code] = values_dict[column_name]
             df_input['Available'][df_input['gene'] == gene_code] = available
-        print(gene_code, '\t', values_dict)
+        time_now = time.time()
+        print(cnt, '{}s'.format(time_now-time_begin),gene_code, '\t', values_dict)
         if cnt % 20==0:
             df_input.to_csv('result.csv',index = None)
