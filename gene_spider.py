@@ -45,6 +45,8 @@ if __name__ == '__main__':
     for gene_code in df_input['gene']:
         cnt+=1
         # gene_code = 'Solyc04g009860'
+        # gene_code = 'Solyc01g005290'
+        # gene_code = 'Solyc00g012540'
         if (df_input['Available'][df_input['gene']==gene_code] != '#').values[0]:
             continue
 
@@ -57,13 +59,25 @@ if __name__ == '__main__':
             locus_id = url_sub.split('=')[-1]
             gene_url = ajax_url_template.replace('#ID#', locus_id)
             r = rq.get(gene_url)
-            ajax_content = eval(r.text.replace('null','None'))['html'].replace('<br/>','')
+            ajax_content = eval(r.text.replace('null','None'))['html'].replace(' <br/>','')
             html = etree.HTML(html_template.replace('Content_Replace', ajax_content))
             column_names_returned = html.xpath('//div/table/tr/td[1]//text()')
             column_names_returned = [i.strip() for i in column_names]
-            table = html.xpath('//div/table/tr/td[2]//text()')
-            table = [i.strip() for i in table]
-            values_dict = dict(zip(column_names_returned, table))
+            # table = html.xpath('//div/table/tr/td[2]//text()')
+            # table = [i.strip() for i in table]
+            # values_dict = dict(zip(column_names_returned, table))
+            elements = html.xpath('//div/table/tr')
+            values_dict = dict()
+            for i in range(len(elements)):
+                key = html.xpath('//div/table/tr[{}]/td[1]//text()'.format(i+1))
+                key = [i.strip() for i in key]
+                key = [i for i in key if i ]
+                key = ' '.join(key)
+                value = html.xpath('//div/table/tr[{}]/td[2]//text()'.format(i+1))
+                value = [i.strip() for i in value]
+                value = [i for i in value if i]
+                value = ' '.join(value)
+                values_dict[key] = value
             available = 1
         else:
             table = ['']*len(column_names)
