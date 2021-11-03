@@ -112,9 +112,5 @@ if __name__ == '__main__':
             df_input['Available'][df_input['gene'] == gene_code] = available
         time_now = time.time()
         print(cnt, '{}s'.format(time_now-time_begin),gene_code, '\t', values_dict)
-<<<<<<< HEAD
         if cnt % 32==0:
-=======
-        if cnt % 20==0:
->>>>>>> 7f3c7905df5110c42e1ea0b74e0cbb3bd094eaf1
             df_input.to_csv('result.csv',index = None)

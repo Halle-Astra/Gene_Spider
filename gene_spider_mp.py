@@ -32,6 +32,7 @@ query_string_midfix = '/search/quick?term='
 ajax_url_template = 'https://solgenomics.net/jsforms/locus_ajax_form.pl?object_id=#ID#&action=view'  # Use it by replacing #ID#
 
 num_proc = 48
+num_dump = 200
 
 def spider_process(gene_code):
     query_url = home_url + query_string_midfix + gene_code
@@ -114,7 +115,7 @@ if __name__ == '__main__':
         genes.append(gene_code)
         res = pool.apply_async(spider_process, args=(gene_code,))
         res_ls.append(res)
-        if (cnt + 1) % num_proc == 0:
+        if (cnt + 1) % num_dump == 0 or (cnt+1)==len(df_input):
             pool.close()
             pool.join()
             for j, res in enumerate(res_ls):
@@ -130,5 +131,8 @@ if __name__ == '__main__':
             genes = []
 
             time_now = time.time()
-            print(cnt, '{}s'.format(time_now - time_begin), gene_code, '\t', values_dict)
             df_input.to_csv('result.csv', index=None)
+            print(cnt, '{}s'.format(time_now - time_begin), gene_code, '\t', values_dict)
+    # df_input.to_csv('result.csv', index=None)
+    print('all gene info finished.')
+
